@@ -62,6 +62,70 @@ void putLightweightSpaceship(GameState& state, int r, int c) {
         }
     }
 }
+void putMiddleweightSpaceship(GameState& state, int r, int c) {
+    const int patternRows = 5;
+    const int patternCols = 6;
+    const int pattern[patternRows][patternCols] = {
+        {0, 0, 0, 1, 0, 0},
+        {0, 1, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0},
+        {1, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 0}
+    };
+
+    if (r + patternRows <= state.rows && c + patternCols <= state.cols) {
+        for (int i = 0; i < patternRows; ++i) {
+            for (int j = 0; j < patternCols; ++j) {
+                if (pattern[i][j] == 1) {
+                    state.grid[r + i][c + j] = 1;
+                }
+            }
+        }
+    }
+}
+
+void putHeavyweightSpaceship(GameState& state, int r, int c) {
+    const int patternRows = 5;
+    const int patternCols = 7;
+    const int pattern[patternRows][patternCols] = {
+        {0, 0, 0, 1, 1, 0, 0},
+        {0, 1, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0},
+        {1, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 0}
+    };
+
+    if (r + patternRows <= state.rows && c + patternCols <= state.cols) {
+        for (int i = 0; i < patternRows; ++i) {
+            for (int j = 0; j < patternCols; ++j) {
+                if (pattern[i][j] == 1) {
+                    state.grid[r + i][c + j] = 1;
+                }
+            }
+        }
+    }
+}
+
+void putQueenBeeShuttle(GameState& state, int r, int c) {
+    const std::vector<std::pair<int, int>> aliveCells = {
+        {0,0}, {0,1}, {0,20}, {0,21},
+        {1,0}, {1,1}, {1,8}, {1,13}, {1,20}, {1,21},
+        {2,7}, {2,9}, {2,12}, {2,14},
+        {3,7}, {3,10}, {3,11}, {3,14},
+        {4,8}, {4,9}, {4,12}, {4,13},
+        {5,10}, {5,11},
+        {6,9}, {6,12}
+    };
+
+    for (const auto& cell : aliveCells) {
+        int targetR = r + cell.first;
+        int targetC = c + cell.second;
+        
+        if (targetR < state.rows && targetC < state.cols) {
+            state.grid[targetR][targetC] = 1;
+        }
+    }
+}
 
 int countAliveNeighbors(const GameState& state, int r, int c) {
     int count = 0;
@@ -121,7 +185,7 @@ void gameLife() {
     clearGrid(state);
 
     int choice;
-    std::cout << "1. Random\n2. Glider\n3. Lightweight Spaceship\n";
+    std::cout << "1. Random\n2. Glider\n3. Lightweight Spaceship\n4. Middleweight Spaceship\n5. Heavyweight Spaceship\n6. Queen Bee Shuttle\n";
     std::cin >> choice;
 
     switch(choice) {
@@ -133,6 +197,15 @@ void gameLife() {
             break;
         case 3:
             putLightweightSpaceship(state, 5, 5);
+            break;
+        case 4:
+            putMiddleweightSpaceship(state, 5, 5);
+            break;
+        case 5:
+            putHeavyweightSpaceship(state, 5, 5);
+            break;
+        case 6:
+            putQueenBeeShuttle(state, 10, 5);
             break;
         default:
             initRandom(state, 15);

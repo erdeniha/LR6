@@ -84,25 +84,25 @@ void AddRoundKey(uint8_t state[16], const std::vector<uint8_t>& roundKey, int ro
 }
 
 std::vector<uint8_t> KeyExpansion(const std::vector<uint8_t>& key) {
-    std::vector<uint8_t> roundKeys(176); 
+    std::vector<uint8_t> roundKeys(176);
+    
     for (int i = 0; i < 16; i++) roundKeys[i] = key[i];
-
-    int bytesGenerated = 16;
-    int rconIteration = 1;
+    
     uint8_t temp[4];
-
-    while (bytesGenerated < 176) {
-        for (int i = 0; i < 4; i++) temp[i] = roundKeys[i + bytesGenerated - 4];
-
-        if (bytesGenerated % 16 == 0) {
-            uint8_t t = temp[0]; temp[0] = temp[1]; temp[1] = temp[2]; temp[2] = temp[3]; temp[3] = t;
-            for (int i = 0; i < 4; i++) temp[i] = sbox[temp[i]];
-            temp[0] ^= Rcon[rconIteration++];
+    for (int i = 4; i < 44; i++) {
+        for (int j = 0; j < 4; j++) temp[j] = roundKeys[(i - 1) * 4 + j];
+        
+        if (i % 4 == 0) {
+            uint8_t t = temp[0];
+            temp[0] = sbox[temp[1]];
+            temp[1] = sbox[temp[2]];
+            temp[2] = sbox[temp[3]];
+            temp[3] = sbox[t];
+            temp[0] ^= Rcon[i / 4];
         }
-
-        for (int i = 0; i < 4; i++) {
-            roundKeys[bytesGenerated] = roundKeys[bytesGenerated - 16] ^ temp[i];
-            bytesGenerated++;
+        
+        for (int j = 0; j < 4; j++) {
+            roundKeys[i * 4 + j] = roundKeys[(i - 4) * 4 + j] ^ temp[j];
         }
     }
     return roundKeys;
